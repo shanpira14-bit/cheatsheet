@@ -1,0 +1,40 @@
+# Kubernetes ConfigMap configuration for nginx load balancer settings
+---
+# API version for the ConfigMap resource
+apiVersion: v1
+# Specifies the type of Kubernetes resource being defined
+kind: ConfigMap
+# METADATA SECTION - Contains data that helps uniquely identify the object
+metadata:
+  name: nginx-config  # Name of the ConfigMap
+# DATA SECTION - Contains the configuration data stored in the ConfigMap
+data:
+  # nginx configuration file
+  nginx.conf: |
+    worker_processes 4;
+    worker_rlimit_nofile 40000;
+
+    events {
+      worker_connections 8192;
+    }
+
+    stream { 
+      upstream rancher_server_http {
+        least_conn;
+        server 192.168.0.100:80 max_fails=3 fail_timeout=5s;
+        server 192.168.0.101:80 max_fails=3 fail_timeout=5s;
+      }
+      server {
+        listen 80;
+        proxy_pass rancher_server_http;
+      }
+      upstream rancher_server_https {
+        least_conn;
+        server 192.168.0.100:443 max_fails=3 fail_timeout=5s;
+        server 192.168.0.101:443 max_fails=3 fail_timeout=5s;
+      }
+      server {
+        listen 443;
+        proxy_pass rancher_server_https;
+      }
+    }

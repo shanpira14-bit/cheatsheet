@@ -1,0 +1,30 @@
+# Kubernetes PersistentVolumeClaim configuration to request storage from a PersistentVolume
+---
+# API version for the PersistentVolumeClaim resource
+apiVersion: v1
+# Specifies the type of Kubernetes resource being defined
+kind: PersistentVolumeClaim
+# METADATA SECTION - Contains data that helps uniquely identify the object
+metadata:
+  name: homer-pvc
+# SPEC SECTION - Defines the desired state of the PersistentVolumeClaim
+spec:
+  # Access modes for the PersistentVolumeClaim
+  accessModes:
+  - ReadWriteMany # Multiple nodes can read and write
+  # Resource requests for the PersistentVolumeClaim
+  resources:
+    requests: 
+      storage: 10Gi # Amount of storage requested
+  selector: {} # Selector to match the PersistentVolume
+  storageClassName: nfs # Storage class name
+  volumeMode: Filesystem # Volume mode type
+  volumeName: homer # Name of the PersistentVolume to bind to
+# STATUS SECTION - Represents the current state of the PersistentVolumeClaim
+status:
+  accessModes:
+  - ReadWriteMany # Access modes of the bound PersistentVolume
+  capacity:
+    storage: 10Gi # Amount of storage allocated
+  phase: Bound # Current phase of the PersistentVolumeClaim
+

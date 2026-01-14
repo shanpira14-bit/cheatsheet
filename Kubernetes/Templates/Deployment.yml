@@ -1,0 +1,49 @@
+# Kubernetes Deployment configuration for nginx application
+---
+# API version for the Deployment resource
+apiVersion: apps/v1
+# Specifies the type of Kubernetes resource being defined
+kind: Deployment
+# METADATA SECTION - Contains data that helps uniquely identify the object
+metadata:
+  name: nginx # Name of the Deployment
+# SPEC SECTION - Defines the desired state of the Deployment
+spec:
+  # Selector to identify the Pods managed by this Deployment
+  selector:
+    # Label selector for Pods
+    matchLabels:
+      app: nginx
+  replicas: 2
+  # Template for the Pods managed by this Deployment
+  template:
+    metadata:
+      labels:
+        app: nginx
+    # SPEC SECTION - Defines the desired state of the Pods
+    spec:
+      # List of containers to run in the Pod
+      containers:
+        # Container definition for nginx
+        - name: nginx # Name of the container
+          image: nginx # Docker image to use for the container
+          # List of ports to expose from the container
+          ports:
+            - containerPort: 80
+          # Mount the ConfigMap as a volume
+          volumeMounts:
+          - name: nginx-config # Name of the volume to mount
+            mountPath: /etc/nginx/nginx.conf # Path inside the container
+            subPath: nginx.conf # Specific file from the ConfigMap
+          # Resource requests and limits for the container
+          resources: 
+            limits:
+              cpu: "100m" # Maximum CPU limit
+            request:
+              cpu: "100m" # Minimum CPU request
+      # List of volumes for the Pod
+      volumes:
+        - name: nginx-config # Name of the volume
+          # Source of the volume is a ConfigMap
+          configMap:
+            name: nginx-config

@@ -1,0 +1,28 @@
+# Horizontal Pod Autoscaler configuration to automatically scale the number of pods
+# based on CPU utilization for the nginx deployment.
+
+---
+# API version for the HorizontalPodAutoscaler resource
+apiVersion: autoscaling/v1
+
+# Specifies the type of Kubernetes resource being defined
+kind: HorizontalPodAutoscaler
+
+# METADATA SECTION - Contains data that helps uniquely identify the object
+metadata: 
+  name: nginx
+
+# SPEC SECTION - Defines the desired state of the HorizontalPodAutoscaler
+spec:
+  # Defines the scaling behavior
+  maxReplicas: 5  # Maximum number of replicas
+  minReplicas: 1  # Minimum number of replicas
+  # Target resource to scale (nginx Deployment)
+  scaleTargetRef:
+    apiVersion: extension/v1beta1        # API version of the target resource
+    kind: Deployment                     # Kind of the target resource
+    name: nginx                          # Name of the target resource
+  # Target average CPU utilization percentage for scaling
+  targetCPUUtilizationPercentage: 20
+
+  #kubectl autoscale deploy nginx --min 1 --max 5 --cpu-percent 20

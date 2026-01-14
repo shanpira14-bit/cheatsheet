@@ -1,0 +1,35 @@
+# Kubernetes PersistentVolume configuration for NFS storage used by Homer application.
+---
+# API version for the PersistentVolume resource
+apiVersion: v1
+# Specifies the type of Kubernetes resource being defined
+kind: PersistentVolume
+# METADATA SECTION - Contains data that helps uniquely identify the object
+metadata:
+  name: homer # Name of the PersistentVolume
+# SPEC SECTION - Defines the desired state of the PersistentVolume
+spec:
+  # Access modes for the PersistentVolume
+  accessModes:
+    - ReadWriteMany # Multiple nodes can read and write
+#    - string # Additional access modes can be specified
+  # Storage capacity of the PersistentVolume
+  capacity:
+    # Amount of storage allocated
+    storage: 10Gi
+#    key: string
+  # Claim reference to bind the PersistentVolume to a PersistentVolumeClaim
+  claimRef:
+    apiVersion: v1
+    kind: PersistentVolumeClaim # Kind of the claim
+    name: homer-pvc        # Name of the claim
+#    fieldPath: string
+  # NFS configuration for the PersistentVolume
+  nfs:
+    path: /volume1/docker/homer # NFS server path
+    readOnly: false        # Read-write access
+    server: 192.168.0.4     # NFS server IP address
+  # Reclaim policy for the PersistentVolume
+  persistentVolumeReclaimPolicy: Retain # Retain data after release
+  storageClassName: nfs # Storage class name
+  volumeMode: Filesystem # Volume mode type

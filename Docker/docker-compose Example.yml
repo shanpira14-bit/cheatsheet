@@ -1,0 +1,57 @@
+version: '3'
+services:
+  app:
+    image: 'jc21/nginx-proxy-manager:latest'
+    ports:
+      - '49161:80'
+      - '81:81'
+      - '49162:443'
+    environment:
+      DB_MYSQL_HOST: "db"
+      DB_MYSQL_PORT: 3306
+      DB_MYSQL_USER: "npm"
+      DB_MYSQL_PASSWORD: "npm"
+      DB_MYSQL_NAME: "npm"
+    volumes:
+      - /volume1/docker/nginxproxymanager/data:/data
+      - /volume1/docker/nginxproxymanager/letsencrypt:/etc/letsencrypt 
+    networks: 
+      frontend:
+        ipv4_address: 192.168.0.10
+      backend: 
+    
+  db:
+    image: 'jc21/mariadb-aria:latest'
+    environment:
+      MYSQL_ROOT_PASSWORD: 'npm'
+      MYSQL_DATABASE: 'npm'
+      MYSQL_USER: 'npm'
+      MYSQL_PASSWORD: 'npm'
+    volumes:
+      - /volume1/docker/nginxproxymanager/data/mysql:/var/lib/mysql
+    networks:
+      backend:
+
+  mysql:
+    image: 'mysql/mysql-server:latest'
+    ports:
+      - '3306:3306'
+      - '33060:33060'
+      - '33061:33061'
+    volumes:
+      - /volume1/docker/mysql/data/mysql:/var/lib/mysql
+    networks:
+      frontend:
+        ipv4_address: 192.168.0.11
+      others:
+
+networks:
+  frontend:
+    external: true
+    name: nginx_network
+  backend: 
+    external: true
+    name: nginx_bridge
+  others:
+    external: true
+    name: db_bridge
